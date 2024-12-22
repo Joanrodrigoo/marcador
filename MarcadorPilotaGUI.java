@@ -11,6 +11,9 @@ public class MarcadorPilotaGUI {
     private int tantosEquipo1 = 0; // Tantos actuales del equipo 1
     private int tantosEquipo2 = 0; // Tantos actuales del equipo 2
     private final String[][] matriz = new String[6][2];
+    private int ultimoPuntoEquipo1 = 0; // Últim punto de Equipo 1
+    private int ultimoPuntoEquipo2 = 0; // Últim punto de Equipo 2
+
 
   
 
@@ -23,6 +26,8 @@ public class MarcadorPilotaGUI {
     private JButton botonEquipo1;
     private JButton botonEquipo2;
     private JButton resetButton;
+    private JButton deshacerPuntoButton;
+
 
     public MarcadorPilotaGUI() {
         // Crear ventana principal
@@ -35,6 +40,7 @@ public class MarcadorPilotaGUI {
         JPanel panelJocs = new JPanel(new GridLayout(1, 2, 10, 10));
         marcadorJocsEquipo1 = new JLabel("0", SwingConstants.CENTER);
         marcadorJocsEquipo2 = new JLabel("0", SwingConstants.CENTER);
+        
 
         // Estilo de los marcadores de juegos
         marcadorJocsEquipo1.setFont(new Font("Arial", Font.BOLD, 24));
@@ -61,6 +67,7 @@ public class MarcadorPilotaGUI {
         JPanel panelBotones = new JPanel(new GridLayout(3, 1, 10, 10));
         botonEquipo1 = new JButton("Tanto Equipo 1");
         botonEquipo2 = new JButton("Tanto Equipo 2");
+        deshacerPuntoButton = new JButton("Deshacer Último Punto");
         resetButton = new JButton("Reiniciar Marcador");
 
         // Añadir acciones a los botones
@@ -84,10 +91,18 @@ public class MarcadorPilotaGUI {
                 reiniciarMarcador();
             }
         });
+        
+        deshacerPuntoButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                deshacerPunto();
+            }
+        });
 
         panelBotones.add(botonEquipo1);
         panelBotones.add(botonEquipo2);
         panelBotones.add(resetButton);
+        panelBotones.add(deshacerPuntoButton);
 
         // Añadir paneles al frame
         frame.add(panelJocs, BorderLayout.NORTH);  // Juegos arriba
@@ -99,6 +114,11 @@ public class MarcadorPilotaGUI {
     }
 
     private void manejarPunto(int equipo) {
+    	
+    	// Guardem el punt anterior abans de modificar los tantos
+        ultimoPuntoEquipo1 = tantosEquipo1;
+        ultimoPuntoEquipo2 = tantosEquipo2;
+    	
         // Configuración inicial de la matriz
         matriz[0][0] = "00";
         matriz[0][1] = "00";
@@ -155,11 +175,12 @@ public class MarcadorPilotaGUI {
 
     private void ganarJuego(int equipo) {
         if (equipo == 1) {
-            jocsEquipo1++;
+            jocsEquipo1 += 5; // Els jocs sumen 5 punts
         } else if (equipo == 2) {
-            jocsEquipo2++;
+            jocsEquipo2 += 5; // Els jocs sumen 5 punts
         }
-        reiniciarTantos();
+        reiniciarTantos(); // Reiniciem els punts dels "tantos"
+        actualizarMarcador(); // Actualitzem el marcador
     }
     private void actualizarMarcador() {
         // Actualizar tantos para el equipo 1 (rojo)
@@ -173,14 +194,22 @@ public class MarcadorPilotaGUI {
         marcadorJocsEquipo2.setText(String.valueOf(jocsEquipo2));
     }
     
-    private void igualarA30() {
-        tantosEquipo1 = 2;
-        tantosEquipo2 = 2;
-    }
+//    private void igualarA30() {
+//        tantosEquipo1 = 2;
+//        tantosEquipo2 = 2;
+//    }
 
     private void reiniciarTantos() {
         tantosEquipo1 = 0;
         tantosEquipo2 = 0;
+    }
+    private void deshacerPunto() {
+        // Restaurar los tantos al último valor guardado
+        tantosEquipo1 = ultimoPuntoEquipo1;
+        tantosEquipo2 = ultimoPuntoEquipo2;
+
+        // Actualizar el marcador después de deshacer el punto
+        actualizarMarcador();
     }
 
     private void reiniciarMarcador() {
